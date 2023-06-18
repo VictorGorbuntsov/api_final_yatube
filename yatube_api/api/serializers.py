@@ -1,12 +1,13 @@
-from posts.models import Comment, Follow, Group, Post, User
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
+
+from posts.models import Comment, Follow, Group, Post, User
 
 
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'title', 'slug', 'description')
+        fields = '__all__'
         model = Group
 
 
@@ -14,7 +15,7 @@ class PostSerializer(serializers.ModelSerializer):
     author = SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
-        fields = ('id', 'text', 'author', 'group', 'pub_date')
+        fields = '__all__'
         model = Post
 
 
@@ -24,7 +25,7 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'text', 'post', 'created', 'author')
+        fields = '__all__'
         model = Comment
         read_only_fields = ('post',)
 
@@ -42,7 +43,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = ('id', 'following', 'user')
+        fields = '__all__'
         validators = (
             serializers.UniqueTogetherValidator(
                 queryset=model.objects.all(),
@@ -56,11 +57,3 @@ class FollowSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Вы не можете подписаться на себя самого!')
         return data
-
-
-class UserSerializer(serializers.ModelSerializer):
-    posts = serializers.StringRelatedField(many=True, read_only=True)
-
-    class Meta:
-        model = User
-        fields = '__all__'
